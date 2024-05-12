@@ -1,0 +1,19 @@
+{
+	"recommendations": [
+		"vscode-icons-team.vscode-icons",
+		"eamodio.gitlens",
+		"sandy081.todotasks",
+		"esbenp.prettier-vscode",
+		"mhutchie.git-graph",
+		"mikestead.dotenv",
+		"streetsidesoftware.code-spell-checker",
+		"jeff-hykin.code-eol",
+		"ms-azuretools.vscode-docker",
+		"ecmel.vscode-html-css",
+		"ms-vscode-remote.remote-wsl",
+		"ms-toolsai.jupyter",
+		"mehedidracula.php-namespace-resolver",
+		"ms-python.vscode-pylance",
+		"ms-python.python"
+	]
+}

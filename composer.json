@@ -1,0 +1,28 @@
+{
+    "name": "uxmansarwar/response",
+    "description": "",
+    "keywords": [
+        "response handler/collector"
+    ],
+    "type": "library",
+    "license": "PUBLIC LICENSE",
+    "autoload": {
+        "psr-4": {
+            "UxmanSarwar\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Uxman Sarwar",
+            "email": "uxmansrwr@gmail.com",
+            "homepage": "https://github.com/uxmansarwar"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "php": "^8.2"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
