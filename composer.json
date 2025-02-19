@@ -20,7 +20,7 @@
     ],
     "minimum-stability": "beta",
     "require": {
-        "php": "^8.2"
+        "php": "^7.0"
     },
     "config": {
         "sort-packages": true
