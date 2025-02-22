@@ -5,12 +5,7 @@
         "response handler/collector"
     ],
     "type": "library",
-    "license": "PUBLIC LICENSE",
-    "autoload": {
-        "psr-4": {
-            "UxmanSarwar\\": "src/"
-        }
-    },
+    "license": "proprietary",
     "authors": [
         {
             "name": "Uxman Sarwar",
@@ -18,11 +13,24 @@
             "homepage": "https://github.com/uxmansarwar"
         }
     ],
-    "minimum-stability": "beta",
-    "require": {
-        "php": "^8.2"
-    },
     "config": {
-        "sort-packages": true
-    }
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "UxmanSarwar\\Response\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.35",
+        "pestphp/pest": "^2.34",
+        "phpstan/phpstan": "^1.10"
+    },
+    "minimum-stability": "stable"
 }
