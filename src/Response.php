@@ -7,9 +7,10 @@ final class Response
 
     private static ?self $instance = null;
     private static ?bool $returnUserInputInResponse = null;
+    private static ?string $key = null;
     private static array $results = [];
     private static array $errors = [];
-    private static array $_INPUT = [];
+    public static array $_INPUT = [];
 
     // Private constructor to prevent direct instantiation
     private function __construct()
@@ -44,14 +45,25 @@ final class Response
         return self::$instance;
     }
 
+    public static function key(string $key = ''): self
+    {
+        self::$key = empty($key) ? NULL : $key;
+        return self::init();
+    }
+
     /**
      * Stores a result.
      * 
      * @param mixed $value The result to store.
      */
-    public static function result(mixed $value): void
+    public static function result(mixed $value = ''): self
     {
-        self::$results[] = $value;
+        if (self::$key) {
+            self::$results[self::$key][] = $value;
+        } else
+            self::$results[] = $value;
+
+        return self::init();
     }
 
     /**
@@ -59,9 +71,14 @@ final class Response
      * 
      * @param string $message The error message to store.
      */
-    public static function error(string $message): void
+    public static function error(string $message): self
     {
-        self::$errors[] = $message;
+        if (self::$key) {
+            self::$errors[self::$key][] = $message;
+        } else
+            self::$errors[] = $message;
+
+        return self::init();
     }
 
     /**
