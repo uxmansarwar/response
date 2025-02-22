@@ -1,6 +1,6 @@
 <?php
 
-namespace UxmanSarwar\Response;
+namespace UxmanSarwar;
 
 final class Response
 {
