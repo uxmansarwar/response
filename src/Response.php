@@ -8,124 +8,192 @@
  * @linkedin https://www.linkedin.com/in/uxmansarwar
  * @email    uxmansrwr@gmail.com
  * @since    Uxman is full-stack(PHP, Laravel, Tailwind, JavaScript, VueJs, More...) developer since 2013
- * @version  2.0.1
+ * @version  3.0.0
  *
  * ----------------------------------------------------------------------
  * 
  * ----------------------------------------------------------------------
  */
 namespace UxmanSarwar;
-
+/**
+ * Final class Response
+ * 
+ * A singleton class for handling API responses, including results, errors, and user inputs.
+ * It provides structured response formats in JSON and array formats.
+ */
 final class Response
 {
+    /** @var string Key name for results in response */
+    private static string $result_key_text = 'result';
 
+    
+    /** @var string Key name for errors in response */
+    private static string $error_key_text = 'error';
+
+    
+    /** @var string Key name for user input in response */
+    private static string $input_key_text = 'input';
+
+
+    /** @var self|null Singleton instance of the Response class */
     private static ?self $instance = null;
+
+    
+    /** @var bool|null Flag to determine if user input should be returned in the response */
     private static ?bool $returnUserInputInResponse = null;
+
+    
+    /** @var string|null Key for grouping results and errors */
     private static ?string $key = null;
+
+    
+    /** @var array<string, mixed> Array to store result data */
     private static array $results = [];
+
+    
+    /** @var array<string, string> Array to store error messages */
     private static array $errors = [];
+
+    
+    /** @var array<string, mixed> Stores user input (GET, POST, JSON) */
     public static array $_INPUT = [];
 
-    // Private constructor to prevent direct instantiation
+    /**
+     * Private constructor to enforce singleton pattern
+     * Initializes user input data from GET, POST, and JSON request body
+     */
     private function __construct()
     {
+        self::$instance = null;
+        self::$returnUserInputInResponse = null;
+        self::$key = null;
+        self::$results = [];
+        self::$errors = [];
         self::$_INPUT = array_merge($_GET, $_POST);
-        $jsonInput = json_decode(trim((string)file_get_contents('php://input')), true);
+
+        // Decode JSON input
+        $jsonInput = json_decode(trim((string) file_get_contents('php://input')), true);
         if (!empty($jsonInput) && json_last_error() === JSON_ERROR_NONE) {
             self::$_INPUT = array_merge(self::$_INPUT, $jsonInput);
         }
     }
 
     /**
-     * Enables or disables including user input in the response.
+     * Returns the singleton instance of the Response class
      * 
-     * @param bool $input If true, user input will be included in the response.
+     * @return self
      */
-    public static function input(bool $input = false): void
+    public static function singleton(): self
     {
-        self::$returnUserInputInResponse = $input;
+        return isset(self::$instance) ? self::$instance : self::init();
     }
 
     /**
-     * Singleton pattern: Initializes or returns the existing instance.
+     * Initializes and returns a new instance of the Response class
      * 
      * @return self
      */
     public static function init(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
+        self::$instance = new self();
         return self::$instance;
     }
 
-    public static function key(string $key = ''): self
+    /**
+     * Enables or disables returning user input in the response
+     * 
+     * @param bool $input Whether to return user input
+     * @return self
+     */
+    public static function input(bool $input = false): self
     {
-        self::$key = empty($key) ? NULL : $key;
-        return self::init();
+        self::$returnUserInputInResponse = $input;
+        return self::singleton();
     }
 
     /**
-     * Stores a result.
+     * Sets a key to group results and errors
      * 
-     * @param mixed $value The result to store.
+     * @param string $key Key name for grouping
+     * @return self
+     */
+    public static function key(string $key = ''): self
+    {
+        self::$key = empty($key) ? null : $key;
+        return self::singleton();
+    }
+
+    /**
+     * Adds a result value to the response
+     * 
+     * @param mixed $value Result data
+     * @return self
      */
     public static function result(mixed $value = ''): self
     {
         if (self::$key) {
             self::$results[self::$key][] = $value;
-        } else
+        } else {
             self::$results[] = $value;
-
-        return self::init();
+        }
+        return self::singleton();
     }
 
     /**
-     * Stores an error message.
+     * Adds an error message to the response
      * 
-     * @param string $message The error message to store.
+     * @param string $message Error message
+     * @return self
      */
     public static function error(string $message): self
     {
         if (self::$key) {
             self::$errors[self::$key][] = $message;
-        } else
+        } else {
             self::$errors[] = $message;
-
-        return self::init();
+        }
+        return self::singleton();
     }
 
     /**
-     * Returns stored results and errors as a JSON-encoded string.
+     * Retrieves the response data as an associative array
      * 
-     * @return string JSON representation of stored data.
+     * @return array<string, mixed> Response array containing results, errors, and optionally user input
+     */
+    public static function collection(): array
+    {
+        $response = [
+            self::$result_key_text => self::$results,
+            self::$error_key_text => self::$errors
+        ];
+        if (self::$returnUserInputInResponse) {
+            $response[self::$input_key_text] = self::$_INPUT;
+        }
+        return $response;
+    }
+
+    /**
+     * Retrieves the response data as a JSON string
+     * 
+     * @return string JSON encoded response data
      */
     public static function json(): string
     {
-        $response = [
-            'result' => self::$results,
-            'error'  => self::$errors
-        ];
-        if (self::$returnUserInputInResponse) {
-            $response['input'] = self::$_INPUT;
-        }
-        return json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        return json_encode(self::collection(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
     /**
-     * Returns stored results and errors as an associative array.
+     * Retrieves the response data as an associative array
      * 
-     * @return array The stored data as an array.
+     * @return array<string, mixed> Response array
      */
     public static function array(): array
     {
-        $response = [
-            'result' => self::$results,
-            'error'  => self::$errors
-        ];
-        if (self::$returnUserInputInResponse) {
-            $response['input'] = self::$_INPUT;
-        }
-        return $response;
+        return self::collection();
+    }
+
+    
+    public function __toString() {
+        return json_encode(self::collection(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 }

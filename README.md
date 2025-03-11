@@ -1,117 +1,125 @@
-# Response
+# Response - PHP API Response Handler
 
-Response is a PHP class designed to manage API responses efficiently. It provides a singleton-based approach to storing and retrieving results, errors, and user input data in multiple formats (JSON, array). This class ensures proper handling of API responses while maintaining PHP 7+ compatibility.
+[![Packagist](https://img.shields.io/packagist/v/uxmansarwar/response)](https://packagist.org/packages/uxmansarwar/response)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D7.2-blue)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## Features
-- Singleton pattern ensures a single instance.
-- Store results and errors dynamically.
-- Capture user input from `$_GET`, `$_POST`, and JSON payloads.
-- Retrieve stored data in JSON, array, format.
-- Support for enabling/disabling user input inclusion in responses.
-- Works on PHP 7 and above.
+## Overview
+
+`Response` is a **lightweight PHP library** designed to streamline **API response handling**. It follows a **singleton-based pattern** to store and retrieve results, errors, and user input efficiently. The package is **PSR-4 compliant** and fully compatible with **PHP 7.2+ and PHP 8.2**.
+
+### **Key Features**
+- ✅ **Singleton pattern** to prevent redundant object creation.
+- ✅ **Structured response handling** for JSON and array outputs.
+- ✅ **Collect API results & errors dynamically**.
+- ✅ **Retrieve user input** from `$_GET`, `$_POST`, and JSON payloads.
+- ✅ **Flexible data retrieval** (JSON, array, collection format).
+- ✅ **Works with Laravel, Symfony, CodeIgniter, WordPress, and Core PHP**.
+
+---
 
 ## Installation
-Clone the repository into your project directory:
 
+### **Install via Composer**
+You can install this package using Composer:
 ```sh
-$ git clone https://github.com/yourusername/Response.git
+composer require uxmansarwar/response
 ```
 
-Include the `Response.php` file in your project:
-
+### **Manual Installation**
+Alternatively, clone this repository and include it in your project:
+```sh
+git clone https://github.com/uxmansarwar/Response.git
+```
+Then, include the autoloader:
 ```php
-require_once 'Response.php';
+require 'vendor/autoload.php';
 ```
 
-## Usage
-### Initializing the Response
-Since `Response` follows the singleton pattern, you do not instantiate it directly. Instead, use the `init()` method:
+---
 
+## **Usage Examples**
+
+### **1. Initializing the Response Handler**
 ```php
+use UxmanSarwar\Response;
+
 Response::init();
 ```
 
-### Storing Results
-You can store multiple results dynamically using the `result()` method:
-
+### **2. Storing Results**
 ```php
-Response::result("Operation successful");
+Response::result("User created successfully");
 Response::result(["id" => 1, "name" => "John Doe"]);
 ```
 
-### Storing Errors
-Similarly, errors can be stored using the `error()` method:
-
+### **3. Handling Errors**
 ```php
-Response::error("Invalid request");
-Response::error("Database connection failed");
+Response::error("Invalid API request");
+Response::error("Failed to connect to the database");
 ```
 
-### Retrieving Data
-You can retrieve the stored results and errors in different formats:
-
-#### JSON Format
+### **4. Retrieving Response Data**
+#### JSON Output:
 ```php
 echo Response::json();
 ```
-**Output:**
+**Example Output:**
 ```json
 {
     "result": [
-        "Operation successful",
+        "User created successfully",
         { "id": 1, "name": "John Doe" }
     ],
     "error": [
-        "Invalid request",
-        "Database connection failed"
+        "Invalid API request",
+        "Failed to connect to the database"
     ]
 }
 ```
 
-#### Array Format
+#### Array Output:
 ```php
-$response_array = Response::array();
+$response_array = Response::collection();
 print_r($response_array);
 ```
-**Output:**
+
+---
+
+## **Advanced Features**
+
+### **5. Grouping Responses with a Key**
 ```php
-Array (
-    [result] => Array (
-        [0] => Operation successful
-        [1] => Array ([id] => 1, [name] => John Doe)
-    )
-    [error] => Array (
-        [0] => Invalid request
-        [1] => Database connection failed
-    )
-)
+Response::key("user")->result(["id" => 2, "name" => "Jane Doe"]);
+echo Response::json();
 ```
 
-### Handling User Input
-User input (from `$_GET`, `$_POST`, or JSON requests) is captured automatically. You can include it in the response using:
-
+### **6. Include User Input in Response**
 ```php
 Response::input(true);
 echo Response::json();
 ```
 If a request is made with:
 ```sh
-GET /api.php?id=5&name=John
+GET /api.php?id=10&name=Alice
 ```
-The output will be:
+The output will include:
 ```json
-{
-    "result": [],
-    "error": [],
-    "input": {
-        "id": "5",
-        "name": "John"
-    }
+"input": {
+    "id": "10",
+    "name": "Alice"
 }
 ```
 
-### Example Use Case
-#### API Response Handling
+### **7. Custom Error & Result Keys**
+You can define custom keys for results and errors:
+```php
+Response::key("dns");
+```
+
+---
+
+## **Use Case Example: API Response Handling**
 ```php
 Response::init();
 
@@ -129,9 +137,22 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 echo Response::json();
 ```
 
-### Contributing
-Feel free to fork this repository, make enhancements, and submit pull requests. Suggestions and issues are welcome!
+---
 
-### License
-This project is licensed under the MIT License.
+## **Why Use This Package?**
+### ✅ **For Laravel & Symfony Developers**: Use it as a service-based response handler.
+### ✅ **For WordPress Developers**: Improve structured AJAX responses.
+### ✅ **For REST API Development**: Optimize API response handling with minimal effort.
+### ✅ **For Microservices**: Centralize error handling and response formatting.
+
+---
+
+## **Testing the Package**
+To install and run tests:
+```sh
+composer install
+vendor/bin/phpstan analyse src --level=max
+vendor/bin/pest
+```
+
 
