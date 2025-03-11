@@ -4,20 +4,36 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '../src/Response.php';
 
 use UxmanSarwar\Response as res;
 
-res::init()->input(true);
-res::key('mysql')->result(['sql' => 'this is value related to upcoming sorting thing']);
-res::result('this is value 2');
 
-res::key('mysql-2')->result(['sql' => 'this is value related to upcoming sorting thing']);
-res::result('this is value 2');
-res::result('this is value 2');
-res::result('this is value 2');
+// ------------------------------------------------------v3.0.0
 
-res::key();
 
-res::error('MySql got error');
 
-echo res::json();
+
+
+
+
+// ------------------------------------------------------v3.0.0
+
+
+echo res::init();
+
+
+// ------------------------------------------------------
+// res::init()->input(true);
+// res::key('mysql')->result(['sql' => 'this is value related to upcoming sorting thing']);
+// res::result('this is value 2');
+
+// res::key('mysql-2')->result(['sql' => 'this is value related to upcoming sorting thing']);
+// res::result('this is value 2');
+// res::result('this is value 2');
+// res::result('this is value 2');
+
+// res::key();
+
+// res::error('MySql got error');
+
+// echo res::json();
 
 
 
