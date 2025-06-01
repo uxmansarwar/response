@@ -1,77 +1,156 @@
 <?php
-/**
- * ----------------------------------------------------------------------
- * ----------------------------------------------------------------------
- *
- * @author   UxmanSarwar
- * @github   https://github.com/uxmansarwar
- * @linkedin https://www.linkedin.com/in/uxmansarwar
- * @email    uxmansrwr@gmail.com
- * @since    Uxman is full-stack(PHP, Laravel, Tailwind, JavaScript, VueJs, More...) developer since 2013
- * @version  3.0.0
- *
- * ----------------------------------------------------------------------
- * 
- * ----------------------------------------------------------------------
- */
+
+declare(strict_types=1);
+
 namespace UxmanSarwar;
 /**
- * Final class Response
+ * ==========================================================================
+ *  UxmanSarwar - PHP Response Package
+ * ==========================================================================
+ *
+ * @package     uxmansarwar/response
+ * @author      Uxman Sarwar <uxmansrwr@gmail.com>
+ * @license     MIT License
+ * @version     4.0.0
+ * @since       1.0.0
+ *
+ * @github      https://github.com/uxmansarwar
+ * @linkedin    https://www.linkedin.com/in/uxmansarwar
+ * @email       uxmansrwr@gmail.com
+ * @bio         Uxman is a professional full-stack developer since 2013,
+ *              specializing in PHP, Laravel, Tailwind CSS, JavaScript,
+ *              Vue.js, REST APIs, and scalable SaaS architectures.
+ *
+ * @see         https://github.com/uxmansarwar/response
+ *
  * 
- * A singleton class for handling API responses, including results, errors, and user inputs.
- * It provides structured response formats in JSON and array formats.
+ * ==========================================================================
+ *  Class: Response
+ * ==========================================================================
+ * A centralized response handler for API output formatting in PHP-based web
+ * applications. Designed to be used within a Composer package, it manages
+ * structured JSON or array-based responses while encapsulating results,
+ * errors, ttl, query, and optional input reflection.
+ * 
+ * 
+ * ==========================================================================
+ *  Purpose:
+ * ==========================================================================
+ * Enhances API response consistency, debugging, and testing by offering a
+ * fluent and clean interface to populate, shape, and return structured data.
+ * 
+ * 
+ * ==========================================================================
+ *  Responsibilities:
+ * ==========================================================================
+ * • Singleton instantiation and lifecycle control  
+ * • Standardized result, ttl, query and error message handling/encapsulating  
+ * • Input retrieval (GET, POST, JSON) and parsing  
+ * • Response serialization to JSON and array formats  
  */
 final class Response
 {
-    /** @var string Key name for results in response */
-    private static string $result_key_text = 'result';
+    /**
+     * Result key name in the final response array.
+     * Used to separate successful data entries from other response components.
+     *
+     * @var string
+     */
+    private const RESULT_KEY_TXT = 'result';
 
-    
-    /** @var string Key name for errors in response */
-    private static string $error_key_text = 'error';
+    /**
+     * Error key name in the final response array.
+     * Holds all error messages reported by the application.
+     *
+     * @var string
+     */
+    private const ERROR_KEY_TXT = 'error';
 
-    
-    /** @var string Key name for user input in response */
-    private static string $input_key_text = 'input';
+    /**
+     * Input key name used when returning user input data with the response.
+     * Holds all input like ($_GET, $_POST or php://input) application.
+     *
+     * @var string
+     */
+    private const INPUT_KEY_TXT = 'input'; // Suggestion: Update this to 'input' for clarity.
 
+    private const TTL_KEY_TXT = 'ttl';
+    private const QUERY_KEY_TXT = 'query';
 
-    /** @var self|null Singleton instance of the Response class */
-    private static ?self $instance = null;
+    /**
+     * Singleton instance of the class.
+     * Ensures consistent and memory-safe usage across multiple invocations.
+     *
+     * @var self|null
+     */
+    private static ?self $instance = NULL;
 
-    
-    /** @var bool|null Flag to determine if user input should be returned in the response */
-    private static ?bool $returnUserInputInResponse = null;
+    /**
+     * Toggle to include request input in the response.
+     *
+     * @var bool|null
+     */
+    private static ?bool $returnUserInputInResponse = NULL;
 
-    
-    /** @var string|null Key for grouping results and errors */
-    private static ?string $key = null;
+    /**
+     * Optional grouping key used to index results or errors.
+     *
+     * @var string|null
+     */
+    private static ?string $key = NULL;
 
-    
-    /** @var array<string, mixed> Array to store result data */
+    /**
+     * Optional nested index used under the current `$key` for sub-grouping.
+     *
+     * @var string|null
+     */
+    private static ?string $index = NULL;
+
+    /**
+     * Holds all result data pushed through the `result()` method.
+     *
+     * @var array
+     */
     private static array $results = [];
 
-    
-    /** @var array<string, string> Array to store error messages */
+    /**
+     * Stores all error messages pushed through the `error()` method.
+     *
+     * @var array
+     */
     private static array $errors = [];
 
-    
-    /** @var array<string, mixed> Stores user input (GET, POST, JSON) */
+    public static ?int $TTL;
+    public static mixed $QUERY;
+
+    /**
+     * Holds merged input data from `$_GET`, `$_POST`, and JSON payload.
+     *
+     * @var array
+     */
     public static array $_INPUT = [];
 
     /**
-     * Private constructor to enforce singleton pattern
-     * Initializes user input data from GET, POST, and JSON request body
+     * Private constructor to enforce singleton pattern.
+     * Initializes state, merges traditional form data and JSON body input,
+     * and clears all previous data containers.
      */
     private function __construct()
     {
-        self::$instance = null;
-        self::$returnUserInputInResponse = null;
-        self::$key = null;
+        // Reset all internals on construction
+        self::$instance = NULL;
+        self::$returnUserInputInResponse = NULL;
+        self::$key = NULL;
+        self::$index = NULL;
         self::$results = [];
         self::$errors = [];
+        self::$TTL = NULL;
+        self::$QUERY = NULL;
+
+        // Merge GET and POST data into the $_INPUT array
         self::$_INPUT = array_merge($_GET, $_POST);
 
-        // Decode JSON input
+        // Additionally capture and merge raw JSON input, if valid
         $jsonInput = json_decode(trim((string) file_get_contents('php://input')), true);
         if (!empty($jsonInput) && json_last_error() === JSON_ERROR_NONE) {
             self::$_INPUT = array_merge(self::$_INPUT, $jsonInput);
@@ -79,18 +158,21 @@ final class Response
     }
 
     /**
-     * Returns the singleton instance of the Response class
-     * 
+     * Get the singleton instance.
+     * If not yet initialized, it will call `init()` to construct the class.
+     *
      * @return self
      */
     public static function singleton(): self
     {
+        self::$index = NULL; // Reset nested index on new chain
         return isset(self::$instance) ? self::$instance : self::init();
     }
 
     /**
-     * Initializes and returns a new instance of the Response class
-     * 
+     * Initialize and return a new instance of the class.
+     * This method explicitly resets all internals and input parsing.
+     *
      * @return self
      */
     public static function init(): self
@@ -100,9 +182,10 @@ final class Response
     }
 
     /**
-     * Enables or disables returning user input in the response
-     * 
-     * @param bool $input Whether to return user input
+     * Enable or disable returning request input data with the response.
+     * This is especially useful for debugging, echoing back the user's request input.
+     *
+     * @param bool $input Whether to include user input in the response.
      * @return self
      */
     public static function input(bool $input = false): self
@@ -112,70 +195,119 @@ final class Response
     }
 
     /**
-     * Sets a key to group results and errors
-     * 
-     * @param string $key Key name for grouping
+     * Define a primary key for grouping results and errors.
+     * Useful when handling multiple entities or modules in a single response.
+     *
+     * @param string $key
      * @return self
      */
     public static function key(string $key = ''): self
     {
-        self::$key = empty($key) ? null : $key;
+        self::$key = empty($key) ? NULL : $key;
         return self::singleton();
     }
 
     /**
-     * Adds a result value to the response
-     * 
-     * @param mixed $value Result data
+     * Define a secondary index for finer grouping under the main key.
+     * Allows hierarchical organization of response data.
+     *
+     * @param string $index
+     * @return self
+     */
+    public static function index(string $index = ''): self
+    {
+        self::$index = empty($index) ? NULL : $index;
+        return isset(self::$instance) ? self::$instance : self::init();
+    }
+
+    /**
+     * Push a result value into the response array.
+     * Supports plain, keyed, and indexed formats depending on current key/index state.
+     *
+     * @param mixed $value
      * @return self
      */
     public static function result(mixed $value = ''): self
     {
         if (self::$key) {
-            self::$results[self::$key][] = $value;
+            if (self::$index)
+                self::$results[self::$key][self::$index] = $value;
+            else
+                self::$results[self::$key][] = $value;
         } else {
-            self::$results[] = $value;
+            if (self::$index)
+                self::$results[self::$index] = $value;
+            else
+                self::$results[] = $value;
         }
         return self::singleton();
     }
 
     /**
-     * Adds an error message to the response
-     * 
-     * @param string $message Error message
+     * Push an error message into the error collection.
+     * Supports plain, keyed, and indexed formats just like `result()`.
+     *
+     * @param string $message
      * @return self
      */
     public static function error(string $message): self
     {
         if (self::$key) {
-            self::$errors[self::$key][] = $message;
+            if (self::$index)
+                self::$errors[self::$key][self::$index] = $message;
+            else
+                self::$errors[self::$key][] = $message;
         } else {
-            self::$errors[] = $message;
+            if (self::$index)
+                self::$errors[self::$index] = $message;
+            else
+                self::$errors[] = $message;
         }
         return self::singleton();
     }
 
+    public static function ttl(int $ttl = 30): self
+    {
+        self::$TTL = $ttl;
+        return self::singleton();
+    }
+
+    public static function query(mixed $query = ''): self
+    {
+        self::$QUERY = $query;
+        return self::singleton();
+    }
+
     /**
-     * Retrieves the response data as an associative array
-     * 
-     * @return array<string, mixed> Response array containing results, errors, and optionally user input
+     * Compile the complete response data structure as an associative array.
+     * Includes results, errors, and optionally input values.
+     *
+     * @return array
      */
     public static function collection(): array
     {
         $response = [
-            self::$result_key_text => self::$results,
-            self::$error_key_text => self::$errors
+            self::RESULT_KEY_TXT => self::$results,
+            self::ERROR_KEY_TXT => self::$errors
         ];
+
         if (self::$returnUserInputInResponse) {
-            $response[self::$input_key_text] = self::$_INPUT;
+            $response[self::INPUT_KEY_TXT] = self::$_INPUT;
         }
+
+        if (self::$TTL)
+            $response[self::TTL_KEY_TXT] = self::$TTL;
+
+        if (self::$QUERY)
+            $response[self::QUERY_KEY_TXT] = self::$QUERY;
+
         return $response;
     }
 
     /**
-     * Retrieves the response data as a JSON string
-     * 
-     * @return string JSON encoded response data
+     * Return the entire response as a formatted JSON string.
+     *
+     * @return string
      */
     public static function json(): string
     {
@@ -183,17 +315,23 @@ final class Response
     }
 
     /**
-     * Retrieves the response data as an associative array
-     * 
-     * @return array<string, mixed> Response array
+     * Return the entire response as a PHP array.
+     *
+     * @return array
      */
     public static function array(): array
     {
         return self::collection();
     }
 
-    
-    public function __toString() {
+    /**
+     * Magic method that allows the object to be cast to a string (e.g., echo $response).
+     * Automatically returns the JSON representation of the response.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
         return json_encode(self::collection(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 }

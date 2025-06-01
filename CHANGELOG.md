@@ -1,28 +1,120 @@
-# Changelog
+# 📦 CHANGELOG for uxmansarwar/response
 
-## [3.0.0] - 2025-03-11
-### Added
-- **PHPStan Compliant Developer Comments**: Added detailed PHPStan-compliant comments to improve code readability and maintainability.
-- **`collection()` Method**: Introduced a new method to centralize response data collection, reducing redundancy in `json()` and `array()`.
-- **Static Response Key Names**: Defined `$result_key_text`, `$error_key_text`, and `$input_key_text` as static class properties for better maintainability.
+This is the official changelog for the `uxmansarwar/response` Composer package.  
+This PHP package helps developers return structured API responses in a simple, clean, and fluent way.  
+Maintained by [Uxman Sarwar](https://github.com/uxmansarwar) — a professional full-stack PHP developer since 2013.
 
-### Changed
-- **Singleton Handling**: Improved `singleton()` method for better reusability instead of initializing in multiple places.
-- **Constructor Reset Behavior**: Adjusted constructor logic to ensure that each instantiation resets response states correctly.
-- **JSON Parsing Validation**: Enhanced JSON request body parsing by verifying `json_last_error()`.
-- **Better Result & Error Storage**: Updated result and error storage to always ensure correct structuring when using keys.
-
-### Fixed
-- **Incorrect Singleton Reinitialization**: Ensured `singleton()` and `init()` methods correctly maintain a single instance.
-- **Input Handling Edge Cases**: Addressed cases where JSON input merging could fail under certain request formats.
-- **Return Consistency**: Standardized method return values to always return `self` where applicable for method chaining.
+> Install via Composer:  
+> `composer require uxmansarwar/response`
 
 ---
 
-## [2.0.1] - Previous Version
-### Initial Features
-- Implemented Singleton pattern.
-- Added methods for storing results (`result()`) and errors (`error()`).
-- Supported response output in both JSON (`json()`) and array (`array()`) formats.
-- Allowed toggling of user input inclusion in responses via `input()` method.
+## 📌 Version 4.0.0 – Major Rewrite & Powerful Improvements (May 2025)
 
+This version is a **major upgrade** from `v3.x` to `v4.0.0`.  
+It is a complete rewrite with **new features**, **cleaner code**, and **more flexibility** for real-world APIs and production apps.
+
+### ✅ What's New
+
+- 🔁 **Total Refactor to Singleton-based Fluent Class**
+  - Keeps only one instance in memory. Cleaner, faster, and easier to use.
+
+- 🗂️ **New `index()` Method**
+  - Add secondary keys under each primary `key()`. Useful for nesting grouped data.
+
+- 🧠 **New `ttl()` Support**
+  - You can now attach a **TTL (time to live)** value in the response. Useful for cache-aware APIs or auto-expiring resources.
+
+- 🔍 **New `query()` Method**
+  - Attach queries(Like what this response about), filter info, or any debug context directly to the response.
+
+- 🧩 **Clearer Constants**
+  - All internal keys are now constants like `RESULT_KEY_TXT`, `ERROR_KEY_TXT`, `INPUT_KEY_TXT`, etc.
+  - Easier to maintain and debug in large apps.
+
+- 🔒 **Private Constructor with Auto Reset**
+  - Every call to `init()` fully resets internal states (`results`, `errors`, `keys`, `ttl`, etc.).
+
+- 🌐 **Smarter Input Collection**
+  - Automatically merges `$_GET`, `$_POST`, and raw JSON from `php://input`.
+  - No need to manually parse input again.
+
+- 🧪 **Fluent Interface**
+  - You can now write responses like:
+    ```php
+    Response::key('user')->index('profile')->result(['name' => 'John']);
+    ```
+
+- 🧼 **Improved Readability and Simplicity**
+  - All methods return `$this` or `self::singleton()` for smooth chaining.
+  - Code is clean, short, and easy for junior and senior developers to follow.
+
+---
+
+## 🧯 Version 3.0.0 – Stable & Basic (Early 2024)
+
+This was the original **stable release** of the Response class.  
+It provided basic JSON response handling in a singleton-style package.
+
+### Features Included:
+- ✅ Add results via `result($value)`
+- ❌ Add errors via `error($message)`
+- 🔁 Group responses using `key($name)`
+- 📥 Optionally include user input with `input(true)`
+- 🧾 Response as `array()` or `json()`
+- 🔄 Automatic input parsing from `$_GET`, `$_POST`, and `php://input`
+- 🧼 Singleton structure with private constructor and `init()` method
+
+---
+
+## 💡 Why Use This PHP Package?
+
+- Built by a real-world **senior PHP developer** with over **12 years of experience**
+- Ideal for **Laravel**, **RESTful APIs**, **microservices**, **modular monoliths**, and more
+- Easy to use, even for beginners
+- Clean output format for **mobile apps**, **front-end frameworks**, and **automated testing**
+
+---
+
+## 🔍 SEO & GitHub Keywords
+
+> _To help other developers find this package, the following terms are relevant:_
+
+- PHP JSON Response Composer Package
+- Laravel API Response Helper
+- PHP Singleton Response Class
+- Return structured JSON response in PHP
+- Fluent PHP API response builder
+- Composer PHP package by [Uxman Sarwar](https://github.com/uxmansarwar)
+- PHP developer tools 2025
+- PHP API response formatter
+- Best Composer packages for Laravel APIs
+
+---
+
+## 🧑‍💻 About the Author
+
+This package is built and maintained by [Uxman Sarwar](https://github.com/uxmansarwar),  
+a **senior PHP developer since 2013**, with deep experience in:
+
+- Laravel | PHP 8+ | Tailwind CSS  
+- JavaScript | Vue.js | REST APIs  
+- SaaS Architecture | DevOps | Clean Code  
+
+📧 Reach me: [uxmansrwr@gmail.com](mailto:uxmansrwr@gmail.com)  
+🔗 Connect on [LinkedIn](https://www.linkedin.com/in/uxmansarwar)  
+🐙 Star & follow my work on [GitHub](https://github.com/uxmansarwar)
+
+---
+
+## ⬇️ Install This Package
+
+composer require uxmansarwar/response
+
+Then use it like this:
+
+```php
+use UxmanSarwar\Response;
+
+echo Response::key('user')->result(['name' => 'John'])->json();
+```
