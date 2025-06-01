@@ -1,14 +1,17 @@
 {
     "name": "uxmansarwar/response",
-    "description": "A lightweight PHP response handler for structured API responses.",
+    "description": "Elegant and lightweight PHP Composer Package for standardized API responses with error, ttl, query and result handling. Package developed by UxmanSarwar a Senior PHP Developer since 2013",
     "keywords": [
         "php",
-        "response",
         "api",
+        "response",
+        "json",
         "response handler",
+        "structured response",
         "error handling",
-        "json response",
-        "response collector"
+        "response formatter",
+        "api output",
+        "data collector"
     ],
     "type": "library",
     "license": "MIT",
@@ -16,9 +19,15 @@
         {
             "name": "Uxman Sarwar",
             "email": "uxmansrwr@gmail.com",
-            "homepage": "https://github.com/uxmansarwar"
+            "homepage": "https://github.com/uxmansarwar",
+            "role": "Developer"
         }
     ],
+    "homepage": "https://github.com/uxmansarwar/response",
+    "support": {
+        "issues": "https://github.com/uxmansarwar/response/issues",
+        "source": "https://github.com/uxmansarwar/response"
+    },
     "config": {
         "sort-packages": true,
         "prefer-stable": true,
@@ -32,7 +41,7 @@
         }
     },
     "require": {
-        "php": ">=7.0"
+        "php": ">=8.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.35",
@@ -41,5 +50,11 @@
         "mockery/mockery": "^1.6",
         "phpunit/phpunit": "^10.4"
     },
-    "minimum-stability": "stable"
+    "scripts": {
+        "test": "pest",
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "fix": "php-cs-fixer fix"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

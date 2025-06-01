@@ -1,125 +1,99 @@
-# Response - PHP API Response Handler
+# 📦 Response – Elegant PHP API Response Handler
 
 [![Packagist](https://img.shields.io/packagist/v/uxmansarwar/response)](https://packagist.org/packages/uxmansarwar/response)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D7.2-blue)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.0-blue)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/uxmansarwar/response?style=social)](https://github.com/uxmansarwar/response)
 
-## Overview
+## 🔍 Overview
 
-`Response` is a **lightweight PHP library** designed to streamline **API response handling**. It follows a **singleton-based pattern** to store and retrieve results, errors, and user input efficiently. The package is **PSR-4 compliant** and fully compatible with **PHP 7.2+ and PHP 8.2**.
+**`uxmansarwar/response`** is a powerful yet lightweight PHP package that makes it easy to manage structured API responses. Built with modern PHP practices, it follows a clean singleton pattern and supports result grouping, TTL, debug queries, and more. Ideal for Laravel, Symfony, WordPress, CodeIgniter, or raw PHP projects.
 
-### **Key Features**
-- ✅ **Singleton pattern** to prevent redundant object creation.
-- ✅ **Structured response handling** for JSON and array outputs.
-- ✅ **Collect API results & errors dynamically**.
-- ✅ **Retrieve user input** from `$_GET`, `$_POST`, and JSON payloads.
-- ✅ **Flexible data retrieval** (JSON, array, collection format).
-- ✅ **Works with Laravel, Symfony, CodeIgniter, WordPress, and Core PHP**.
+Developed and maintained by [Uxman Sarwar](https://github.com/uxmansarwar), a senior PHP developer since 2013.
+
+## ✅ Features
+
+- Singleton-based fluent API
+- Add results, errors, queries, TTL, and input metadata
+- Auto-collects `$_GET`, `$_POST`, and raw JSON input
+- Customizable result/error key groups with `key()` and `index()`
+- Get structured responses as JSON or array
+- Great for APIs, microservices, and AJAX handlers
 
 ---
 
-## Installation
+## ⚙️ Installation
 
-### **Install via Composer**
-You can install this package using Composer:
-```sh
+### Via Composer
+
+```bash
 composer require uxmansarwar/response
 ```
 
-### **Manual Installation**
-Alternatively, clone this repository and include it in your project:
-```sh
-git clone https://github.com/uxmansarwar/Response.git
-```
-Then, include the autoloader:
-```php
-require 'vendor/autoload.php';
-```
-
 ---
 
-## **Usage Examples**
+## 🚀 Quick Start
 
-### **1. Initializing the Response Handler**
+### Initialize
+
 ```php
 use UxmanSarwar\Response;
 
 Response::init();
 ```
 
-### **2. Storing Results**
+### Add Result
+
 ```php
-Response::result("User created successfully");
-Response::result(["id" => 1, "name" => "John Doe"]);
+Response::result(['id' => 1, 'name' => 'Alice']);
 ```
 
-### **3. Handling Errors**
+### Add Error
+
 ```php
-Response::error("Invalid API request");
-Response::error("Failed to connect to the database");
+Response::error('Invalid request type');
 ```
 
-### **4. Retrieving Response Data**
-#### JSON Output:
+### Grouped Result with Key/Index
+
 ```php
-echo Response::json();
-```
-**Example Output:**
-```json
-{
-    "result": [
-        "User created successfully",
-        { "id": 1, "name": "John Doe" }
-    ],
-    "error": [
-        "Invalid API request",
-        "Failed to connect to the database"
-    ]
-}
+Response::key('user')->index('info')->result(['email' => 'user@example.com']);
 ```
 
-#### Array Output:
+### Set Time-To-Live (TTL)
+
 ```php
-$response_array = Response::collection();
-print_r($response_array);
+Response::ttl(60);
 ```
 
----
+### Attach Debug Query
 
-## **Advanced Features**
-
-### **5. Grouping Responses with a Key**
 ```php
-Response::key("user")->result(["id" => 2, "name" => "Jane Doe"]);
-echo Response::json();
+Response::query('SELECT * FROM users WHERE id = 1');
 ```
 
-### **6. Include User Input in Response**
+### Include Input Data
+
 ```php
 Response::input(true);
-echo Response::json();
-```
-If a request is made with:
-```sh
-GET /api.php?id=10&name=Alice
-```
-The output will include:
-```json
-"input": {
-    "id": "10",
-    "name": "Alice"
-}
 ```
 
-### **7. Custom Error & Result Keys**
-You can define custom keys for results and errors:
+### Output as JSON
+
 ```php
-Response::key("dns");
+echo Response::json();
+```
+
+### Output as Array
+
+```php
+print_r(Response::array());
 ```
 
 ---
 
-## **Use Case Example: API Response Handling**
+## 💡 Example Use Case: API Endpoint
+
 ```php
 Response::init();
 
@@ -127,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error("Only POST requests are allowed");
 } else {
     $data = Response::$_INPUT;
-    if (!isset($data['username']) || empty($data['username'])) {
+    if (empty($data['username'])) {
         Response::error("Username is required");
     } else {
         Response::result("User registered successfully");
@@ -139,20 +113,48 @@ echo Response::json();
 
 ---
 
-## **Why Use This Package?**
-### ✅ **For Laravel & Symfony Developers**: Use it as a service-based response handler.
-### ✅ **For WordPress Developers**: Improve structured AJAX responses.
-### ✅ **For REST API Development**: Optimize API response handling with minimal effort.
-### ✅ **For Microservices**: Centralize error handling and response formatting.
+## 🧪 Testing
 
----
-
-## **Testing the Package**
-To install and run tests:
-```sh
+```bash
 composer install
 vendor/bin/phpstan analyse src --level=max
 vendor/bin/pest
 ```
 
+---
 
+## 🌐 Use Cases
+
+- Laravel: Replace default `response()->json()` with a fluent helper
+- WordPress: Handle AJAX with structured output
+- Symfony: Wrap controller responses with grouped structure
+- REST APIs: Make consistent error/result formatting
+- Microservices: Inject debug info and TTL for downstream caching
+
+---
+
+## 👨‍💻 About the Author
+
+This package is created by [Uxman Sarwar](https://github.com/uxmansarwar), a full-stack PHP Laravel developer.
+
+- GitHub: [@uxmansarwar](https://github.com/uxmansarwar)
+- LinkedIn: [Uxman Sarwar](https://linkedin.com/in/uxmansarwar)
+- Email: [uxmansrwr@gmail.com](mailto:uxmansrwr@gmail.com)
+
+If you found this package useful, consider ⭐ starring the repo and sharing it with other developers.
+
+---
+
+## 🔗 SEO & GitHub Keywords
+
+PHP API response library, structured API output PHP, response formatter, Laravel response helper, singleton response PHP, uxmansarwar response composer, REST API output PHP, error handler class PHP, api response json PHP, PHP response class Laravel
+
+---
+
+## 📥 Composer Install Reminder
+
+```
+composer require uxmansarwar/response
+```
+
+Happy coding! 🚀
